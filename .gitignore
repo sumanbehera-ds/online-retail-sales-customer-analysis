@@ -1,0 +1,10 @@
+# Local data and generated artifacts
+.venv/
+data/raw/
+data/processed/
+data/query_results/
+__pycache__/
+*.py[cod]
+.env
+*.log
+.venv*/
