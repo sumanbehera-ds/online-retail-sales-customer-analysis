@@ -14,7 +14,7 @@ import pymysql
 
 ROOT = Path(__file__).resolve().parents[1]
 SQL_DIR = ROOT / "sql"
-RESULTS_DIR = ROOT / "data" / "query_results"
+RESULTS_DIR = ROOT / "docs" / "query_results"
 
 
 def show_value(value: object) -> str:
@@ -37,6 +37,8 @@ def main() -> None:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     try:
         for sql_file in sorted(SQL_DIR.glob("[0-9][0-9]_*.sql")):
+            if sql_file.name == "00_schema.sql":
+                continue
             source = sql_file.read_text(encoding="utf-8")
             statement = "\n".join(
                 line for line in source.splitlines()

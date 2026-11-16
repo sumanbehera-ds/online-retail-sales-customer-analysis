@@ -1,5 +1,5 @@
 -- Business question: What are merchandise revenue, orders, customers, average order value, and cancellations?
--- KPI definitions: gross merchandise revenue uses positive non-cancellation product lines; net revenue subtracts canceled value from gross. Orders count distinct invoices on those positive sales lines. Registered customers exclude guest rows.
+-- KPI definitions: gross and cancelled values both exclude flagged non-product lines; net revenue subtracts cancelled merchandise value from gross merchandise revenue. Orders count distinct positive merchandise sales invoices. Registered customers exclude guest rows.
 WITH sales AS (
     SELECT *
     FROM online_retail_clean
@@ -19,6 +19,7 @@ cancelled AS (
            COUNT(DISTINCT invoice) AS cancelled_invoices
     FROM online_retail_clean
     WHERE is_cancellation = 1
+      AND is_non_product = 0
 ),
 all_invoices AS (
     SELECT COUNT(DISTINCT invoice) AS invoice_count

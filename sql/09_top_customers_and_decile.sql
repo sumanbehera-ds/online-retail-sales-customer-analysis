@@ -22,8 +22,7 @@ totals AS (
            SUM(CASE WHEN spending_decile = 1 THEN revenue ELSE 0 END) AS top_decile_revenue
     FROM ranked
 )
-SELECT r.customer_id,
-       r.revenue,
+SELECT r.revenue,
        r.orders,
        r.customer_rank,
        t.top_decile_revenue,

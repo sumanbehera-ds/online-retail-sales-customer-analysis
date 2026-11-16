@@ -1,89 +1,144 @@
 # Online Retail Sales and Customer Analysis
 
-This portfolio project analyzes the UCI Online Retail II dataset with Python, MySQL, and Power BI. It is being built as an original, reproducible analysis: cleaning decisions, SQL queries, DAX measures, findings, and recommendations will be documented from work performed on the dataset. The Python data phase uses openpyxl and Python's built-in CSV module.
+An analytics project for the UCI Online Retail II transaction dataset. Python prepares auditable raw and clean extracts, PyMySQL loads them into MySQL, twelve SQL files define sales and customer analyses, and a DAX reference describes a Power BI model. The query results and Power BI report are not yet included.
 
-## Project status
+## Data source and attribution
 
-Python profiling and CSV preparation are complete. The local MySQL load was reported with matching row counts: 1,067,371 raw rows and 1,033,036 deduplicated rows. Query execution, the Power BI report, and evidence based business findings remain in progress.
+The source is [Online Retail II from the UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/502/online+retail+ii), created by Daqing Chen. UCI identifies the unit price as sterling and licenses the dataset under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See [DATA_LICENSE.md](DATA_LICENSE.md) for attribution and scope. Do not commit the downloaded workbook; it is excluded from Git.
 
-## Data source
+Download `online_retail_II.xlsx` from UCI and save it as `data/raw/online_retail_II.xlsx`.
 
-Online Retail II, UCI Machine Learning Repository: https://archive.ics.uci.edu/dataset/502/online+retail+ii
+The tracked sample at [`data/sample/online_retail_sample_invoices.csv`](data/sample/online_retail_sample_invoices.csv) contains a deterministic, month-stratified selection of five whole invoices per observed month (seed 42). It retains all clean transaction lines for each selected invoice, so row count varies and it covers more than the beginning of the workbook.
 
-Dataset license: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Please credit the UCI Machine Learning Repository when redistributing dataset-derived material. The raw workbook is kept out of Git; follow the UCI link to obtain it.
+## Current status
 
-A 1,000-row clean sample is included at [`data/sample/online_retail_sample_1000.csv`](data/sample/online_retail_sample_1000.csv).
+- Python profiling and CSV generation are implemented.
+- Exact record overlap between the two worksheets is removed from the later sheet; exact repeated lines within a worksheet are retained.
+- MySQL staging load, count/revenue checks and explicit `--replace` workflow are implemented.
+- Twelve SQL analyses and a DAX model/measures reference are present.
+- SQL result validation and the two-page Power BI report must be completed before publishing business findings.
 
-## Planned workflow
+See [docs/project_status.md](docs/project_status.md) and [docs/data_quality_report.md](docs/data_quality_report.md) for the latest verified counts and remaining work.
 
-- Validate and clean the workbook in Python.
-- Load raw and clean tables into MySQL.
-- Analyze sales, customers, cancellations, RFM segments, and cohorts with SQL.
-- Build a two-page Power BI report and export a PDF preview.
-- Add findings and recommendations only after checking the actual query results.
+## Setup
 
-## SQL questions
+Python 3.12 is the project environment used for development. MySQL 8.4 and Power BI Desktop are separate applications; Power BI Desktop is needed only for the manual report stage.
 
-1. Core sales and customer KPIs
-2. Monthly revenue and month-over-month growth
-3. Year-over-year revenue by calendar month
-4. Top products by revenue and quantity
-5. Revenue by country and UK share
-6. Monthly cancellation rate
-7. Canceled value as a share of gross merchandise revenue
-8. Repeat customer rate
-9. Top customers and top-decile revenue share
-10. RFM scores and customer segments
-11. Cohort retention
-12. Orders by weekday and hour
-
-## Data cleaning decisions
-
-- Keep rows with a missing customer ID in transaction-level sales analysis; exclude them only from registered-customer metrics.
-- Flag cancellation invoices instead of deleting them, so cancellation counts and value can be analyzed.
-- Count and remove exact duplicate source rows from the clean table; retain the complete original workbook rows in the raw CSV.
-- Flag observed postage, carriage, fee, discount, manual adjustment, sample, and bad-debt codes. Keep those rows for reconciliation and filter them from merchandise-only queries.
-- Keep non-positive quantities and prices, then report and inspect them instead of silently dropping them.
-- Exclude the partial December 2011 from month-over-month and year-over-year trend comparisons.
-
-## Prepare the data
-
-From the repository root on Windows:
+### Windows PowerShell
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-python python\prepare_data.py
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 ```
 
-The preparation script reads `data/raw/online_retail_II.xlsx` and writes the raw CSV, clean CSV, and data quality report. Raw and processed data stay out of Git; the small sample CSV remains tracked. Install dependencies with openpyxl and PyMySQL; this project does not require pandas or SQLAlchemy.
+### macOS / Linux shell
 
-After MySQL 8.4 is running, load both tables with:
-
-```powershell
-python python\load_mysql.py
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
-The loader prompts for the local MySQL username and password; the password input is hidden and is not written to the repository. It loads through staging tables and publishes the final tables only after the inserted row counts match.
+## Run the pipeline
 
-Run and export all numbered analysis queries with:
+Run commands from the repository root.
 
-```powershell
-python python\run_queries.py
+### 1. Prepare the data
+
+```text
+python python/prepare_data.py
 ```
 
-The runner saves CSV result files under the ignored `data/query_results/` folder and writes a small result preview into each SQL file's result comment.
+The script streams both worksheets with openpyxl. It writes `data/processed/online_retail_raw.csv`, `data/processed/online_retail_clean.csv`, `docs/data_quality_report.md`, and `docs/data_quality_report.json`. The clean table includes `source_sheet`, cancellation/guest/non-product flags, and `line_revenue`. Raw and processed CSVs are local and ignored by Git. The generated invoice sample is kept under `data/sample/`.
+
+### 2. Validate prepared files
+
+```text
+python python/validate_data.py
+```
+
+This compares raw/clean CSV row counts and revenue sums with the generated JSON quality summary, reconciles clean row counts by worksheet, and checks that the sample includes complete invoices across all observed months.
+
+### 3. Load MySQL
+
+Start MySQL 8.4, then run:
+
+```text
+python python/load_mysql.py
+```
+
+The script prompts for the database user, hidden password, host and port. It reads canonical table definitions from [`sql/00_schema.sql`](sql/00_schema.sql), creates staging tables without secondary indexes, loads 5,000-row batches, compares counts to the quality summary, and verifies raw/clean revenue sums against MySQL. It creates the secondary indexes after bulk insertion and publishes the tables with a rename only after checks pass.
+
+The default behavior refuses to overwrite final tables. To replace them after reviewing the existing data:
+
+```text
+python python/load_mysql.py --replace
+```
+
+Replacement keeps the existing final tables until the new staged tables pass checks, then atomically renames the old tables to temporary backup names and publishes the new ones.
+
+### 4. Validate published tables (optional)
+
+```text
+python python/validate_data.py --mysql
+```
+
+This compares both published table counts and revenue sums with the generated quality summary. Credentials are prompted locally and are never written into the repository.
+
+### 5. Run the SQL analyses
+
+```text
+python python/run_queries.py
+```
+
+The runner executes numbered analysis files `01` through `12` in order, writes CSV outputs to `docs/query_results/` for review and version control, and replaces each SQL file's `-- Result:` comment with the row count and first three output rows. Query 09 reports ranked customer revenue and order counts without exporting customer IDs. Review `git diff sql/` before committing after query runs. `sql/00_schema.sql` is excluded from the analysis runner.
+
+## Analysis questions
+
+1. Core revenue, orders, registered customers, average order value and cancellation rate.
+2. Monthly revenue and month-over-month growth.
+3. Year-over-year revenue by calendar month.
+4. Top products by revenue and quantity, using the most frequent trimmed description.
+5. Country revenue and UK share.
+6. Monthly cancellation invoice rate.
+7. Cancelled value as a share of positive merchandise sales.
+8. Registered repeat customer rate.
+9. Top customers and top-decile revenue share.
+10. RFM scores and heuristic segments.
+11. Registered-customer cohort retention.
+12. Orders by weekday and hour.
+
+All result metrics must be generated and reviewed before making business claims. The current SQL result comments and project status identify which queries remain unexecuted.
+
+## Data handling rules
+
+- Keep every nonblank source row in the raw extract and record its worksheet in `source_sheet`.
+- Remove only cross-worksheet exact overlap copies, up to the repeated-row count in the earlier worksheet. Retain same-worksheet identical lines because they may be real repeated scans.
+- Trim leading/trailing whitespace from clean product descriptions; raw descriptions remain unchanged.
+- Preserve cancellations, guest rows, non-positive quantities/prices and non-product lines. Flag them for analysis instead of silently deleting them.
+- Use the observed fee/service/test/voucher codes in `python/prepare_data.py`; review the data-quality audit before adding new exclusions. A numeric-only stock-code rule is unsafe because valid product codes include letter suffixes.
+- Keep guest sales in transaction revenue metrics but exclude missing customer IDs from registered-customer metrics. The quality report records 22.77% guest rows in the observed workbook.
+- Cancellation activity is dated by the cancellation transaction date; this source does not link reversals back to their original sale date.
+- The first observed purchase month is not necessarily a customer's true acquisition month. The sample spans a two-year observation window, so repeat and retention metrics are window-dependent.
+- UCI labels unit price as sterling; this project reports monetary values in GBP.
+- Exclude the incomplete December 2011 from full-month revenue trends; queries that include it mark it as partial.
 
 ## Repository layout
 
-- `data/`: local raw and processed data; excluded from Git.
-- `python/`: data validation, cleaning, and loading scripts.
-- `sql/`: numbered MySQL analysis queries.
-- `powerbi/`: DAX model and measures, plus the Power BI report when built.
-- `docs/`: data quality report and project notes.
-- `images/`: dashboard previews.
+- `data/`: local source/processed extracts (ignored) and tracked sample data.
+- `python/`: preparation, MySQL loading, SQL execution and validation scripts.
+- `sql/`: canonical schema and twelve analysis queries.
+- `powerbi/`: DAX model, metric and cohort reference; no `.pbix` is present yet.
+- `docs/`: methodology, quality report, machine-readable summary, stock-code audit, query results, status and licensing notes.
+- `tests/`: standard-library unit tests for transformation and dedupe rules.
 
-## Tools
+## Validation
 
-Python, openpyxl, the built-in CSV module, PyMySQL, MySQL 8.4 LTS, and Power BI Desktop.
+Run helper tests with:
+
+```text
+python -m unittest discover -s tests -v
+```
+
+The tests cover data helper rules on small examples. Full-workbook and MySQL checks are performed by the preparation/validation scripts; there is no CI pipeline configured.

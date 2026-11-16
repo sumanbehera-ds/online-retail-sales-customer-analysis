@@ -1,0 +1,42 @@
+{
+  "source_rows": 1067371,
+  "rows_by_sheet": {
+    "Year 2009-2010": 525461,
+    "Year 2010-2011": 541910
+  },
+  "date_ranges_by_sheet": {
+    "Year 2009-2010": {
+      "min": "2009-12-01",
+      "max": "2010-12-09"
+    },
+    "Year 2010-2011": {
+      "min": "2010-12-01",
+      "max": "2011-12-09"
+    }
+  },
+  "cross_sheet_duplicate_rows": 22523,
+  "cross_sheet_duplicates_by_sheet": {
+    "Year 2010-2011": 22523
+  },
+  "within_sheet_repeats_retained": {
+    "Year 2009-2010": 6865,
+    "Year 2010-2011": 5268
+  },
+  "clean_rows": 1044848,
+  "missing_by_column": {
+    "Customer ID": 243007,
+    "Description": 4382
+  },
+  "cancellation_rows": 19494,
+  "cancellation_invoices": 8292,
+  "quantity_nonpositive": 22950,
+  "price_nonpositive": 6207,
+  "guest_rows": 243007,
+  "non_product_rows": 5911,
+  "min_date": "2009-12-01",
+  "max_date": "2011-12-09",
+  "source_line_revenue_total": "19287250.568",
+  "clean_line_revenue_total": "18909762.118",
+  "sample_seed": 42,
+  "sample_invoices_per_month": 5
+}

@@ -1,4 +1,5 @@
 -- Business question: How do registered customers segment by recency, frequency, and monetary value?
+-- PERCENT_RANK keeps identical metric values tied; it may create uneven-sized score groups.
 WITH eligible_sales AS (
     SELECT *
     FROM online_retail_clean
@@ -18,9 +19,9 @@ customer_rfm AS (
 ),
 scored AS (
     SELECT *,
-           NTILE(5) OVER (ORDER BY recency_days DESC, customer_id) AS recency_score,
-           6 - NTILE(5) OVER (ORDER BY frequency DESC, customer_id) AS frequency_score,
-           6 - NTILE(5) OVER (ORDER BY monetary_value DESC, customer_id) AS monetary_score
+           LEAST(5, 1 + FLOOR(5 * PERCENT_RANK() OVER (ORDER BY recency_days DESC))) AS recency_score,
+           LEAST(5, 1 + FLOOR(5 * PERCENT_RANK() OVER (ORDER BY frequency))) AS frequency_score,
+           LEAST(5, 1 + FLOOR(5 * PERCENT_RANK() OVER (ORDER BY monetary_value))) AS monetary_score
     FROM customer_rfm
 ),
 segments AS (

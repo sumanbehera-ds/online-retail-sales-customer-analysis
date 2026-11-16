@@ -1,2 +1,2 @@
-openpyxl
-pymysql
+openpyxl==3.1.5
+PyMySQL==2.2.8

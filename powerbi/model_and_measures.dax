@@ -8,8 +8,10 @@ DATE(YEAR(FactRetail[invoice_date]), MONTH(FactRetail[invoice_date]), DAY(FactRe
 
 Create DimDate as a calculated table, mark DimDate[Date] as the date column,
 and create a one-to-many relationship from DimDate[Date] to FactRetail[sales_date].
-Create DimProduct from distinct merchandise stock codes and DimCustomer from
-distinct nonblank customer IDs; relate each dimension to FactRetail.
+In Power BI, mark DimDate as the date table and sort DimDate[Month] by
+DimDate[Month Number]. Create DimProduct and DimCustomer, then relate each
+dimension to FactRetail. Validate these expressions in Power BI; this file is
+a reference and is not itself an executable model file.
 */
 
 DimDate =
@@ -20,7 +22,7 @@ RETURN
         CALENDAR(DATE(YEAR(FirstDate), 1, 1), DATE(YEAR(LastDate), 12, 31)),
         "Year", YEAR([Date]),
         "Month Number", MONTH([Date]),
-        "Month", FORMAT([Date], "MMM"),
+    "Month", FORMAT([Date], "MMM"),
         "Month Start", DATE(YEAR([Date]), MONTH([Date]), 1),
         "Year Month", FORMAT([Date], "YYYY-MM"),
         "Is Partial Month", YEAR([Date]) = 2011 && MONTH([Date]) = 12
@@ -33,13 +35,47 @@ ADDCOLUMNS(
         NOT ISBLANK(FactRetail[stock_code])
             && CALCULATE(MAX(FactRetail[is_non_product])) = 0
     ),
-    "Description", CALCULATE(FIRSTNONBLANK(FactRetail[description], 1))
+    "Description",
+        VAR CurrentCode = FactRetail[stock_code]
+        VAR DescriptionCounts =
+            SUMMARIZE(
+                FILTER(
+                    ALL(FactRetail),
+                    FactRetail[stock_code] = CurrentCode
+                        && NOT ISBLANK(FactRetail[description])
+                ),
+                FactRetail[description],
+                "DescriptionRows", COUNTROWS(FactRetail)
+            )
+        VAR MostCommonDescription =
+            TOPN(1, DescriptionCounts, [DescriptionRows], DESC, FactRetail[description], ASC)
+        RETURN MAXX(MostCommonDescription, FactRetail[description])
 )
 
 DimCustomer =
 FILTER(
-    DISTINCT(SELECTCOLUMNS(FactRetail, "customer_id", FactRetail[customer_id])),
-    NOT ISBLANK([customer_id])
+    ADDCOLUMNS(
+        DISTINCT(SELECTCOLUMNS(FactRetail, "customer_id", FactRetail[customer_id])),
+        "First Purchase Date",
+            CALCULATE(
+                MIN(FactRetail[invoice_date]),
+                FactRetail[is_cancellation] = 0,
+                FactRetail[is_non_product] = 0,
+                FactRetail[quantity] > 0,
+                FactRetail[price] > 0
+            ),
+        "First Purchase Month",
+            VAR FirstPurchase =
+                CALCULATE(
+                    MIN(FactRetail[invoice_date]),
+                    FactRetail[is_cancellation] = 0,
+                    FactRetail[is_non_product] = 0,
+                    FactRetail[quantity] > 0,
+                    FactRetail[price] > 0
+                )
+            RETURN IF(NOT ISBLANK(FirstPurchase), DATE(YEAR(FirstPurchase), MONTH(FirstPurchase), 1))
+    ),
+    NOT ISBLANK([customer_id]) && NOT ISBLANK([First Purchase Month])
 )
 
 Gross Revenue =
@@ -54,7 +90,8 @@ CALCULATE(
 Cancelled Value =
 CALCULATE(
     SUMX(FactRetail, ABS(FactRetail[line_revenue])),
-    FactRetail[is_cancellation] = 1
+    FactRetail[is_cancellation] = 1,
+    FactRetail[is_non_product] = 0
 )
 
 Net Revenue =
@@ -96,22 +133,108 @@ CALCULATE(
 
 Repeat Customer Rate =
 VAR CustomerOrderCounts =
-    SUMMARIZE(
-        FILTER(
-            FactRetail,
-            FactRetail[is_cancellation] = 0
-                && FactRetail[is_non_product] = 0
-                && FactRetail[quantity] > 0
-                && FactRetail[price] > 0
-                && NOT ISBLANK(FactRetail[customer_id])
-        ),
-        FactRetail[customer_id],
-        "Order Count", CALCULATE(DISTINCTCOUNT(FactRetail[invoice]))
+    ADDCOLUMNS(
+        FILTER(VALUES(FactRetail[customer_id]), NOT ISBLANK(FactRetail[customer_id])),
+        "Order Count",
+            CALCULATE(
+                DISTINCTCOUNT(FactRetail[invoice]),
+                FactRetail[is_cancellation] = 0,
+                FactRetail[is_non_product] = 0,
+                FactRetail[quantity] > 0,
+                FactRetail[price] > 0
+            )
     )
 VAR RepeatCustomers =
     COUNTROWS(FILTER(CustomerOrderCounts, [Order Count] >= 2))
+VAR CustomersWithOrders =
+    COUNTROWS(FILTER(CustomerOrderCounts, [Order Count] >= 1))
 RETURN
-    DIVIDE(RepeatCustomers, COUNTROWS(CustomerOrderCounts))
+    DIVIDE(RepeatCustomers, CustomersWithOrders)
+
+Customer Frequency =
+CALCULATE(
+    DISTINCTCOUNT(FactRetail[invoice]),
+    FactRetail[is_cancellation] = 0,
+    FactRetail[is_non_product] = 0,
+    FactRetail[quantity] > 0,
+    FactRetail[price] > 0
+)
+
+Customer Monetary Value = [Gross Revenue]
+
+Customer Recency Days =
+VAR LastCustomerPurchase =
+    CALCULATE(
+        MAX(FactRetail[invoice_date]),
+        FactRetail[is_cancellation] = 0,
+        FactRetail[is_non_product] = 0,
+        FactRetail[quantity] > 0,
+        FactRetail[price] > 0
+    )
+VAR LatestDatasetPurchase =
+    CALCULATE(
+        MAX(FactRetail[invoice_date]),
+        REMOVEFILTERS(DimCustomer),
+        REMOVEFILTERS(DimDate),
+        FactRetail[is_cancellation] = 0,
+        FactRetail[is_non_product] = 0,
+        FactRetail[quantity] > 0,
+        FactRetail[price] > 0
+    )
+RETURN
+    IF(NOT ISBLANK(LastCustomerPurchase), DATEDIFF(LastCustomerPurchase, LatestDatasetPurchase, DAY))
+
+RFM Recency Score =
+VAR CustomerSet = FILTER(ALL(DimCustomer[customer_id]), NOT ISBLANK(CALCULATE([Customer Frequency])))
+VAR CustomerCount = COUNTROWS(CustomerSet)
+VAR CustomerRank = RANKX(CustomerSet, CALCULATE([Customer Recency Days]),, DESC, SKIP)
+RETURN IF(CustomerCount = 0, BLANK(), MIN(5, 1 + INT(5 * DIVIDE(CustomerRank - 1, CustomerCount - 1, 0))))
+
+RFM Frequency Score =
+VAR CustomerSet = FILTER(ALL(DimCustomer[customer_id]), CALCULATE([Customer Frequency]) > 0)
+VAR CustomerCount = COUNTROWS(CustomerSet)
+VAR CustomerRank = RANKX(CustomerSet, CALCULATE([Customer Frequency]),, ASC, SKIP)
+RETURN IF(CustomerCount = 0, BLANK(), MIN(5, 1 + INT(5 * DIVIDE(CustomerRank - 1, CustomerCount - 1, 0))))
+
+RFM Monetary Score =
+VAR CustomerSet = FILTER(ALL(DimCustomer[customer_id]), CALCULATE([Customer Frequency]) > 0)
+VAR CustomerCount = COUNTROWS(CustomerSet)
+VAR CustomerRank = RANKX(CustomerSet, CALCULATE([Customer Monetary Value]),, ASC, SKIP)
+RETURN IF(CustomerCount = 0, BLANK(), MIN(5, 1 + INT(5 * DIVIDE(CustomerRank - 1, CustomerCount - 1, 0))))
+
+RFM Segment =
+VAR RScore = [RFM Recency Score]
+VAR FScore = [RFM Frequency Score]
+VAR MScore = [RFM Monetary Score]
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(RScore), BLANK(),
+        RScore >= 4 && FScore >= 4 && MScore >= 4, "Champions",
+        FScore >= 4 && MScore >= 3, "Loyal",
+        RScore <= 2 && FScore >= 3, "At Risk",
+        RScore <= 2, "Hibernating",
+        "Potential"
+    )
+
+Cohort Customers =
+CALCULATE(
+    DISTINCTCOUNT(DimCustomer[customer_id]),
+    REMOVEFILTERS(DimDate)
+)
+
+Active Cohort Customers =
+CALCULATE(
+    DISTINCTCOUNT(FactRetail[customer_id]),
+    FactRetail[is_cancellation] = 0,
+    FactRetail[is_non_product] = 0,
+    FactRetail[quantity] > 0,
+    FactRetail[price] > 0,
+    NOT ISBLANK(FactRetail[customer_id])
+)
+
+Cohort Retention Rate =
+DIVIDE([Active Cohort Customers], [Cohort Customers])
 
 Guest Revenue Share =
 DIVIDE(
