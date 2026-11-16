@@ -31,4 +31,4 @@ FROM ranked r
 CROSS JOIN totals t
 WHERE r.customer_rank <= 10
 ORDER BY r.customer_rank;
--- Result: Pending execution when MySQL is available.
+-- Result: 10 rows returned; first rows: [{"revenue":"580987.040000","orders":"145","customer_rank":"1","top_decile_revenue":"10927073.967000","top_decile_revenue_share":"0.6380795104"},{"revenue":"526751.520000","orders":"145","customer_rank":"2","top_decile_revenue":"10927073.967000","top_decile_revenue_share":"0.6380795104"},{"revenue":"303256.430000","orders":"144","customer_rank":"3","top_decile_revenue":"10927073.967000","top_decile_revenue_share":"0.6380795104"}]

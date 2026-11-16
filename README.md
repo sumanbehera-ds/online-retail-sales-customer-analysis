@@ -16,7 +16,8 @@ The tracked sample at [`data/sample/online_retail_sample_invoices.csv`](data/sam
 - Exact record overlap between the two worksheets is removed from the later sheet; exact repeated lines within a worksheet are retained.
 - MySQL staging load, count/revenue checks and explicit `--replace` workflow are implemented.
 - Twelve SQL analyses and a DAX model/measures reference are present.
-- SQL result validation and the two-page Power BI report must be completed before publishing business findings.
+- Twelve MySQL analyses have been executed; their CSV evidence and verified findings are included under `docs/`.
+- The two-page Power BI report and SQL/DAX parity check remain to be completed in Power BI Desktop.
 
 See [docs/project_status.md](docs/project_status.md) and [docs/data_quality_report.md](docs/data_quality_report.md) for the latest verified counts and remaining work.
 
@@ -109,7 +110,7 @@ The runner executes numbered analysis files `01` through `12` in order, writes C
 11. Registered-customer cohort retention.
 12. Orders by weekday and hour.
 
-All result metrics must be generated and reviewed before making business claims. The current SQL result comments and project status identify which queries remain unexecuted.
+All twelve SQL queries have been executed against the verified tables. Review [`docs/analysis_findings.md`](docs/analysis_findings.md) for results and limitations, and `docs/query_results/` for the full CSV outputs.
 
 ## Data handling rules
 

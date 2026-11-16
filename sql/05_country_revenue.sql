@@ -23,4 +23,4 @@ SELECT country,
        total_revenue - uk_revenue AS rest_of_world_revenue
 FROM with_totals
 ORDER BY revenue DESC;
--- Result: Pending execution when MySQL is available.
+-- Result: 43 rows returned; first rows: [{"country":"United Kingdom","revenue":"16856330.956000","share_of_total":"0.8556098636","uk_revenue":"16856330.956000","rest_of_world_revenue":"2844623.501000"},{"country":"EIRE","revenue":"623795.850000","share_of_total":"0.0316632299","uk_revenue":"16856330.956000","rest_of_world_revenue":"2844623.501000"},{"country":"Netherlands","revenue":"549775.060000","share_of_total":"0.0279060114","uk_revenue":"16856330.956000","rest_of_world_revenue":"2844623.501000"}]

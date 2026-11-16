@@ -42,4 +42,4 @@ SELECT a.cohort_month,
 FROM cohort_activity a
 JOIN cohort_sizes s USING (cohort_month)
 ORDER BY a.cohort_month, a.month_number;
--- Result: Pending execution when MySQL is available.
+-- Result: 625 rows returned; first rows: [{"cohort_month":"2009-12-01","activity_month":"2009-12-01","is_partial_activity_month":"0","is_partial_cohort_month":"0","month_number":"0","cohort_customers":"951","active_customers":"951","retention_rate":"1.0000"},{"cohort_month":"2009-12-01","activity_month":"2010-01-01","is_partial_activity_month":"0","is_partial_cohort_month":"0","month_number":"1","cohort_customers":"951","active_customers":"333","retention_rate":"0.3502"},{"cohort_month":"2009-12-01","activity_month":"2010-02-01","is_partial_activity_month":"0","is_partial_cohort_month":"0","month_number":"2","cohort_customers":"951","active_customers":"317","retention_rate":"0.3333"}]

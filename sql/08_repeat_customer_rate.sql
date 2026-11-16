@@ -14,4 +14,4 @@ SELECT COUNT(*) AS registered_customers,
        SUM(order_count >= 2) AS repeat_customers,
        SUM(order_count >= 2) / NULLIF(COUNT(*), 0) AS repeat_customer_rate
 FROM customer_orders;
--- Result: Pending execution when MySQL is available.
+-- Result: 1 rows returned; first rows: [{"registered_customers":"5852","repeat_customers":"4234","repeat_customer_rate":"0.7235"}]

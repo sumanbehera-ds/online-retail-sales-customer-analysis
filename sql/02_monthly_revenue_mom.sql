@@ -23,4 +23,4 @@ SELECT month_start,
        (gross_merchandise_revenue - previous_month_revenue) / NULLIF(previous_month_revenue, 0) AS mom_growth_rate
 FROM with_previous
 ORDER BY month_start;
--- Result: Pending execution when MySQL is available.
+-- Result: 24 rows returned; first rows: [{"month_start":"2009-12-01","gross_merchandise_revenue":"801102.970000","previous_month_revenue":"","mom_growth_rate":""},{"month_start":"2010-01-01","gross_merchandise_revenue":"613850.812000","previous_month_revenue":"801102.970000","mom_growth_rate":"-0.2337429332"},{"month_start":"2010-02-01","gross_merchandise_revenue":"539744.686000","previous_month_revenue":"613850.812000","mom_growth_rate":"-0.1207233493"}]

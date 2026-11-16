@@ -29,4 +29,4 @@ SELECT sales_year,
 FROM with_previous_year
 WHERE previous_year = sales_year - 1
 ORDER BY sales_month, sales_year;
--- Result: Pending execution when MySQL is available.
+-- Result: 12 rows returned; first rows: [{"sales_year":"2011","sales_month":"1","previous_year":"2010","gross_merchandise_revenue":"671933.190000","previous_year_revenue":"613850.812000","yoy_growth_rate":"0.0946196973"},{"sales_year":"2011","sales_month":"2","previous_year":"2010","gross_merchandise_revenue":"508886.200000","previous_year_revenue":"539744.686000","yoy_growth_rate":"-0.0571723758"},{"sales_year":"2011","sales_month":"3","previous_year":"2010","gross_merchandise_revenue":"691257.610000","previous_year_revenue":"764333.851000","yoy_growth_rate":"-0.0956077516"}]

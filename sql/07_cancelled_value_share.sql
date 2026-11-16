@@ -14,4 +14,4 @@ SELECT month_start,
        cancelled_value / NULLIF(gross_merchandise_revenue, 0) AS cancelled_value_share
 FROM monthly_values
 ORDER BY month_start;
--- Result: Pending execution when MySQL is available.
+-- Result: 25 rows returned; first rows: [{"month_start":"2009-12-01","is_partial_month":"0","gross_merchandise_revenue":"801102.970000","cancelled_value":"19561.280000","cancelled_value_share":"0.0244179347"},{"month_start":"2010-01-01","is_partial_month":"0","gross_merchandise_revenue":"613850.812000","cancelled_value":"7465.630000","cancelled_value_share":"0.0121619616"},{"month_start":"2010-02-01","is_partial_month":"0","gross_merchandise_revenue":"539744.686000","cancelled_value":"12584.390000","cancelled_value_share":"0.0233154496"}]

@@ -43,4 +43,4 @@ SELECT segment,
 FROM segments
 GROUP BY segment
 ORDER BY revenue DESC;
--- Result: Pending execution when MySQL is available.
+-- Result: 5 rows returned; first rows: [{"segment":"Champions","customers":"1249","revenue":"11550770.495000","average_recency_days":"18.6541","average_orders":"17.3251"},{"segment":"Loyal","customers":"857","revenue":"2722878.876000","average_recency_days":"165.0105","average_orders":"8.5204"},{"segment":"Potential","customers":"1676","revenue":"1572442.934000","average_recency_days":"60.7977","average_orders":"2.3878"}]

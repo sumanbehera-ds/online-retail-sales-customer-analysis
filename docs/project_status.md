@@ -13,9 +13,10 @@ Updated: 2026-11-16
 
 ## Remaining work
 
-- Reload MySQL using `python/load_mysql.py --replace`; the current database tables may still use the earlier schema and row counts.
-- Run the CSV-to-MySQL validation, then execute all twelve SQL analyses and retain reviewed CSV results under `docs/query_results/`.
-- Produce findings only after reviewing the query outputs.
+- Loaded and published MySQL tables with verified counts: 1,067,371 raw rows and 1,044,848 clean rows; raw and clean revenue sums match the CSV extracts.
+- Executed all twelve SQL analyses and retained CSV outputs under `docs/query_results/`.
+- Reconciled headline revenue across the KPI, monthly, and country queries; RFM segment counts also reconcile to registered-customer totals.
+- Documented findings and interpretation limits in `docs/analysis_findings.md`.
 - Build and validate the Power BI report after Power BI Desktop is available; no `.pbix`, PDF preview, or screenshots are currently present.
 - Reconcile selected SQL and DAX metrics in Power BI before treating the DAX reference as validated.
 

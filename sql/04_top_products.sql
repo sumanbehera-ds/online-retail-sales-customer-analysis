@@ -45,4 +45,4 @@ SELECT *
 FROM ranked
 WHERE revenue_rank <= 10 OR quantity_rank <= 10
 ORDER BY revenue_rank, quantity_rank, stock_code;
--- Result: Pending execution when MySQL is available.
+-- Result: 14 rows returned; first rows: [{"stock_code":"22423","product_description":"REGENCY CAKESTAND 3 TIER","revenue":"331084.270000","units_sold":"26519","revenue_rank":"1","quantity_rank":"48"},{"stock_code":"85123A","product_description":"WHITE HANGING HEART T-LIGHT HOLDER","revenue":"261509.930000","units_sold":"94839","revenue_rank":"2","quantity_rank":"4"},{"stock_code":"85099B","product_description":"JUMBO BAG RED RETROSPOT","revenue":"182999.670000","units_sold":"97350","revenue_rank":"3","quantity_rank":"2"}]
