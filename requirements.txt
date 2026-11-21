@@ -1,3 +1,5 @@
 openpyxl==3.1.5
 PyMySQL==2.2.8
+matplotlib==3.10.8
+pandas==3.0.1
 reportlab==5.0.0

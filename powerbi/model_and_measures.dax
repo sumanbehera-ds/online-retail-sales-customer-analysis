@@ -1,6 +1,11 @@
 /*
 Model setup
 Rename online_retail_clean to FactRetail after loading it into Power BI.
+The prepared CSV headers use Invoice, StockCode, Description, Quantity,
+InvoiceDate, Price, Customer ID, and Country. If using this DAX reference,
+rename those columns in Power Query to invoice, stock_code, description,
+quantity, invoice_date, price, customer_id, and country respectively. The
+flags and line_revenue already use the required snake_case names.
 Create a calculated sales_date column to relate invoice timestamps to DimDate:
 
 sales_date =
@@ -9,9 +14,11 @@ DATE(YEAR(FactRetail[invoice_date]), MONTH(FactRetail[invoice_date]), DAY(FactRe
 Create DimDate as a calculated table, mark DimDate[Date] as the date column,
 and create a one-to-many relationship from DimDate[Date] to FactRetail[sales_date].
 In Power BI, mark DimDate as the date table and sort DimDate[Month] by
-DimDate[Month Number]. Create DimProduct and DimCustomer, then relate each
-dimension to FactRetail. Validate these expressions in Power BI; this file is
-a reference and is not itself an executable model file.
+DimDate[Month Number]. Create DimProduct and relate it to FactRetail. The
+report's customer page uses the verified SQL summary tables; DimCustomer and
+the RFM/cohort DAX below are optional alternatives and are not used in that page.
+Validate expressions and relationships in Power BI; this file is a reference,
+not an executable model file.
 */
 
 DimDate =
@@ -52,6 +59,7 @@ ADDCOLUMNS(
         RETURN MAXX(MostCommonDescription, FactRetail[description])
 )
 
+// OPTIONAL, NOT USED IN THE SQL-BASED CUSTOMER PAGE
 DimCustomer =
 FILTER(
     ADDCOLUMNS(
@@ -151,6 +159,7 @@ VAR CustomersWithOrders =
 RETURN
     DIVIDE(RepeatCustomers, CustomersWithOrders)
 
+// OPTIONAL, NOT USED IN THE REPORT. These measures require DimCustomer.
 Customer Frequency =
 CALCULATE(
     DISTINCTCOUNT(FactRetail[invoice]),
@@ -217,6 +226,7 @@ RETURN
         "Potential"
     )
 
+// OPTIONAL, NOT USED IN THE REPORT. Use the verified SQL cohort table instead.
 Cohort Customers =
 CALCULATE(
     DISTINCTCOUNT(DimCustomer[customer_id]),
