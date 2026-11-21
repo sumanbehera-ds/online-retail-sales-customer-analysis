@@ -17,12 +17,11 @@ Updated: 2026-11-21
 - Reorganized the README around the project outcomes, five findings, and three recommendations.
 - Merged the `finish-dashboard` work into `main` and pushed the updated default branch.
 - Updated the GitHub repository description and topics to match the current implementation.
-- Saved a Power BI Desktop draft at `powerbi/online-retail-sales-customer-analysis.pbix`. The current PBIX contains one report page with a Gross Revenue card.
 - Created a two-page static dashboard preview from verified SQL CSVs at `powerbi/retail_dashboard_preview.pdf`; rebuild it with `python powerbi/build_dashboard_preview.py`.
 
 ## Remaining work
 
-- Expand the Power BI draft in Desktop with executive trend/product/country visuals, a customer RFM/cohort page, and useful date filters; then export the completed report.
+- The saved PBIX at `powerbi/online-retail-sales-customer-analysis.pbix` currently contains one report page with a Gross Revenue card. Add executive trend/product/country visuals, a customer RFM/cohort page, useful date filters, and export the completed report.
 - Compare selected DAX measures against the verified SQL outputs before describing them as reconciled.
 - The static PDF presents SQL outputs; it is not an export of the PBIX and does not support interactive filtering.
 - Add page screenshots and a genuine Power BI PDF export after the interactive report is finished.

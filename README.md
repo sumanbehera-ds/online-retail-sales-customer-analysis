@@ -6,9 +6,17 @@ An analytics project for the UCI Online Retail II transaction dataset. Python pr
 
 - Prepared and validated **1,044,848 clean transaction rows**; removed 22,523 exact cross-sheet overlap copies while preserving within-sheet repeats.
 - Verified gross merchandise revenue of **GBP 19.70 million**, **39,516** eligible sales invoices, and **5,852** registered customers.
-- Implemented the pipeline with Python, MySQL 8.4, SQL, and Power BI assets. The interactive PBIX is currently a one-card draft; Power BI parity has not been verified.
+- Implemented the pipeline with Python, MySQL 8.4, SQL, and Power BI assets. The saved PBIX currently contains one Gross Revenue card; the interactive report and SQL/DAX parity check remain incomplete.
 - The [two-page dashboard preview](powerbi/retail_dashboard_preview.pdf) is a static document generated from the verified SQL CSVs, not an export from Power BI. Rebuild with `python powerbi/build_dashboard_preview.py`.
 - The [pandas cross-check notebook](notebooks/01_crosscheck.ipynb) independently checks headline SQL totals and includes three exploratory charts.
+
+## Static dashboard preview
+
+These images render the static PDF built from verified SQL outputs. They are not screenshots or an export from Power BI Desktop; the interactive PBIX report is still incomplete.
+
+![Static SQL dashboard preview - executive overview](images/static_preview-1.png)
+
+![Static SQL dashboard preview - customer segments and retention](images/static_preview-2.png)
 
 ## Five findings
 
@@ -41,7 +49,7 @@ The tracked sample at [`data/sample/online_retail_sample_invoices.csv`](data/sam
 - MySQL staging load, count/revenue checks and explicit `--replace` workflow are implemented.
 - Twelve SQL analyses and a DAX model/measures reference are present.
 - Twelve MySQL analyses have been executed; their CSV evidence and verified findings are included under `docs/`.
-- `powerbi/online-retail-sales-customer-analysis.pbix` is a saved Power BI draft. It currently contains one report page with a Gross Revenue card; the full interactive two-page report and SQL/DAX parity check remain to be completed in Power BI Desktop.
+- `powerbi/online-retail-sales-customer-analysis.pbix` currently contains one report page with a Gross Revenue card; the full interactive two-page report and SQL/DAX parity check remain incomplete.
 - `powerbi/retail_dashboard_preview.pdf` is a two-page static preview generated from the verified SQL result CSVs. Rebuild it with `python powerbi/build_dashboard_preview.py`.
 - `notebooks/01_crosscheck.ipynb` reproduces the query 01 headline KPIs and query 08 repeat-customer count/rate from the clean CSV.
 
