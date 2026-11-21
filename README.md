@@ -1,6 +1,6 @@
 # Online Retail Sales and Customer Analysis
 
-An analytics project for the UCI Online Retail II transaction dataset. Python prepares auditable raw and clean extracts, PyMySQL loads them into MySQL, twelve SQL files define sales and customer analyses, and a DAX reference describes a Power BI model. The query results and Power BI report are not yet included.
+An analytics project for the UCI Online Retail II transaction dataset. Python prepares auditable raw and clean extracts, PyMySQL loads them into MySQL, twelve SQL analyses produce verified CSV results, and Power BI assets provide a saved report draft plus a static dashboard preview generated from those SQL outputs.
 
 ## Data source and attribution
 
@@ -17,7 +17,8 @@ The tracked sample at [`data/sample/online_retail_sample_invoices.csv`](data/sam
 - MySQL staging load, count/revenue checks and explicit `--replace` workflow are implemented.
 - Twelve SQL analyses and a DAX model/measures reference are present.
 - Twelve MySQL analyses have been executed; their CSV evidence and verified findings are included under `docs/`.
-- The two-page Power BI report and SQL/DAX parity check remain to be completed in Power BI Desktop.
+- `powerbi/online-retail-sales-customer-analysis.pbix` is a saved Power BI draft. It currently contains one report page with a Gross Revenue card; the full interactive two-page report and SQL/DAX parity check remain to be completed in Power BI Desktop.
+- `powerbi/retail_dashboard_preview.pdf` is a two-page static preview generated from the verified SQL result CSVs. Rebuild it with `python powerbi/build_dashboard_preview.py`.
 
 See [docs/project_status.md](docs/project_status.md) and [docs/data_quality_report.md](docs/data_quality_report.md) for the latest verified counts and remaining work.
 
@@ -130,7 +131,7 @@ All twelve SQL queries have been executed against the verified tables. Review [`
 - `data/`: local source/processed extracts (ignored) and tracked sample data.
 - `python/`: preparation, MySQL loading, SQL execution and validation scripts.
 - `sql/`: canonical schema and twelve analysis queries.
-- `powerbi/`: DAX model, metric and cohort reference; no `.pbix` is present yet.
+- `powerbi/`: Power BI report draft, DAX reference, static dashboard PDF and its reproducible generator.
 - `docs/`: methodology, quality report, machine-readable summary, stock-code audit, query results, status and licensing notes.
 - `tests/`: standard-library unit tests for transformation and dedupe rules.
 
