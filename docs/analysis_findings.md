@@ -43,7 +43,7 @@ Additional query evidence remains available in `docs/query_results/`. For exampl
 - December 2011 is incomplete. The trend queries exclude it, while cancellation and cohort outputs label the partial month.
 - The first observed month may include pre-existing customers. Cohorts identify first purchase *within this workbook*, not necessarily customer acquisition.
 - Non-product codes are manually configured from this dataset. The stock-code audit includes 38 nonstandard-shape review candidates; shape alone does not prove a code is non-product.
-- The DAX file is a reference, not an executable model. A `.pbix` is present, but it currently contains one page with one Gross Revenue card. Power BI Desktop was not controllable in the latest session, so measure parity, the two-page report, and screenshots are still unverified; see `docs/parity_check.md`.
+- The DAX file is a reference, not an executable model. A `.pbix` is present, but it currently contains one page with one Gross Revenue card. Measure parity, the two-page report, and screenshots remain unverified; see `docs/parity_check.md`.
 - The SQL queries are descriptive and do not include statistical significance tests, causal methods, or forecasting.
 
 ## Three recommendations

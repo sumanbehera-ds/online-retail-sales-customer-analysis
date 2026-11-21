@@ -15,18 +15,18 @@ Updated: 2026-11-21
 - Reproduced ten SQL headline values from the clean CSV in `notebooks/01_crosscheck.ipynb`; the notebook contains three saved charts and no customer-level output.
 - Added `docs/parity_check.md` with SQL reference values and explicit pending statuses for Power BI values.
 - Reorganized the README around the project outcomes, five findings, and three recommendations.
-- Created and pushed the `finish-dashboard` branch with the notebook and documentation updates; it remains separate from `main` until the Power BI report work is complete.
+- Merged the `finish-dashboard` work into `main` and pushed the updated default branch.
 - Updated the GitHub repository description and topics to match the current implementation.
 - Saved a Power BI Desktop draft at `powerbi/online-retail-sales-customer-analysis.pbix`. The current PBIX contains one report page with a Gross Revenue card.
 - Created a two-page static dashboard preview from verified SQL CSVs at `powerbi/retail_dashboard_preview.pdf`; rebuild it with `python powerbi/build_dashboard_preview.py`.
 
 ## Remaining work
 
-- Power BI Desktop was not controllable in the latest session. In Desktop, expand the draft with executive trend/product/country visuals, a customer RFM/cohort page, and useful date filters; then export the completed report.
+- Expand the Power BI draft in Desktop with executive trend/product/country visuals, a customer RFM/cohort page, and useful date filters; then export the completed report.
 - Compare selected DAX measures against the verified SQL outputs before describing them as reconciled.
 - The static PDF presents SQL outputs; it is not an export of the PBIX and does not support interactive filtering.
 - Add page screenshots and a genuine Power BI PDF export after the interactive report is finished.
-- Pin the repository to the GitHub profile and review it in a private browser window after the report is complete; browser control was unavailable in this session.
+- Pin the repository to the GitHub profile and review its public presentation in a private browser window after the report is complete.
 
 ## Attribution
 

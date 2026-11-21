@@ -22,7 +22,7 @@ An analytics project for the UCI Online Retail II transaction dataset. Python pr
 
 1. Track recency for Champions and At Risk customers, then test retention actions before scaling them.
 2. Use the observed autumn revenue concentration to inform inventory and staffing reviews; treat it as historical seasonality, not a forecast.
-3. Review cancellation reasons and add a defensible link to original sales before attributing cancellations to the original order month.
+3. Record cancellation reasons.
 
 Detailed definitions, supporting results, and limitations are in [the analysis findings](docs/analysis_findings.md). The eight SQL reference values and current Power BI verification status are recorded in [the parity check](docs/parity_check.md).
 
