@@ -2,6 +2,30 @@
 
 An analytics project for the UCI Online Retail II transaction dataset. Python prepares auditable raw and clean extracts, PyMySQL loads them into MySQL, twelve SQL analyses produce verified CSV results, and Power BI assets provide a saved report draft plus a static dashboard preview generated from those SQL outputs.
 
+## Project at a glance
+
+- Prepared and validated **1,044,848 clean transaction rows**; removed 22,523 exact cross-sheet overlap copies while preserving within-sheet repeats.
+- Verified gross merchandise revenue of **GBP 19.70 million**, **39,516** eligible sales invoices, and **5,852** registered customers.
+- Implemented the pipeline with Python, MySQL 8.4, SQL, and Power BI assets. The interactive PBIX is currently a one-card draft; Power BI parity has not been verified.
+- The [two-page dashboard preview](powerbi/retail_dashboard_preview.pdf) is a static document generated from the verified SQL CSVs, not an export from Power BI. Rebuild with `python powerbi/build_dashboard_preview.py`.
+- The [pandas cross-check notebook](notebooks/01_crosscheck.ipynb) independently checks headline SQL totals and includes three exploratory charts.
+
+## Five findings
+
+1. The United Kingdom contributes **85.56%** of merchandise revenue (GBP 16.86 million); EIRE and the Netherlands are the next largest markets. ([country results](docs/query_results/05_country_revenue.csv))
+2. The top spending decile of registered customers contributes **63.81%** of registered-customer revenue. ([customer ranking](docs/query_results/09_top_customers_and_decile.csv))
+3. Revenue is concentrated in September through November: **36.2%** of full-year 2010 revenue and **40.5%** of January-November 2011 revenue fell in those three months. ([monthly results](docs/query_results/02_monthly_revenue_mom.csv))
+4. **15.46%** of invoices are cancellation invoices, while cancelled merchandise value is **3.65%** of gross merchandise revenue. Cancellation timing uses the recorded cancellation date. ([KPI and cancellation results](docs/query_results/01_core_kpis.csv), [monthly value share](docs/query_results/07_cancelled_value_share.csv))
+5. **72.35%** of identified customers placed at least two orders in the observation window. The Hibernating and At Risk segments contain 2,070 customers; these are descriptive, rule-based groups, not predictions. ([repeat rate](docs/query_results/08_repeat_customer_rate.csv), [RFM results](docs/query_results/10_rfm_segments.csv))
+
+## Three recommendations
+
+1. Track recency for Champions and At Risk customers, then test retention actions before scaling them.
+2. Use the observed autumn revenue concentration to inform inventory and staffing reviews; treat it as historical seasonality, not a forecast.
+3. Review cancellation reasons and add a defensible link to original sales before attributing cancellations to the original order month.
+
+Detailed definitions, supporting results, and limitations are in [the analysis findings](docs/analysis_findings.md). The eight SQL reference values and current Power BI verification status are recorded in [the parity check](docs/parity_check.md).
+
 ## Data source and attribution
 
 The source is [Online Retail II from the UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/502/online+retail+ii), created by Daqing Chen. UCI identifies the unit price as sterling and licenses the dataset under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See [DATA_LICENSE.md](DATA_LICENSE.md) for attribution and scope. Do not commit the downloaded workbook; it is excluded from Git.
@@ -19,6 +43,7 @@ The tracked sample at [`data/sample/online_retail_sample_invoices.csv`](data/sam
 - Twelve MySQL analyses have been executed; their CSV evidence and verified findings are included under `docs/`.
 - `powerbi/online-retail-sales-customer-analysis.pbix` is a saved Power BI draft. It currently contains one report page with a Gross Revenue card; the full interactive two-page report and SQL/DAX parity check remain to be completed in Power BI Desktop.
 - `powerbi/retail_dashboard_preview.pdf` is a two-page static preview generated from the verified SQL result CSVs. Rebuild it with `python powerbi/build_dashboard_preview.py`.
+- `notebooks/01_crosscheck.ipynb` reproduces the query 01 headline KPIs and query 08 repeat-customer count/rate from the clean CSV.
 
 See [docs/project_status.md](docs/project_status.md) and [docs/data_quality_report.md](docs/data_quality_report.md) for the latest verified counts and remaining work.
 
@@ -132,6 +157,7 @@ All twelve SQL queries have been executed against the verified tables. Review [`
 - `python/`: preparation, MySQL loading, SQL execution and validation scripts.
 - `sql/`: canonical schema and twelve analysis queries.
 - `powerbi/`: Power BI report draft, DAX reference, static dashboard PDF and its reproducible generator.
+- `notebooks/`: pandas SQL cross-check notebook with saved outputs.
 - `docs/`: methodology, quality report, machine-readable summary, stock-code audit, query results, status and licensing notes.
 - `tests/`: standard-library unit tests for transformation and dedupe rules.
 
