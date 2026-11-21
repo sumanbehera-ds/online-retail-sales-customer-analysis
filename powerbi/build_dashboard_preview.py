@@ -134,7 +134,7 @@ def draw_product_table(c: canvas.Canvas, x: float, y: float, w: float, h: float,
     c.drawRightString(x + w - 18, top, "Units")
     subset = sorted(products, key=lambda r: float(r["revenue"]), reverse=True)[:5]
     for i, r in enumerate(subset):
-        yy = top - 18 - i * 19
+        yy = top - 18 - i * 15
         c.setStrokeColor(GRID)
         c.line(x + 12, yy - 5, x + w - 12, yy - 5)
         text(c, x + 14, yy, str(i + 1).zfill(2), 8, CYAN, "Helvetica-Bold")
@@ -237,8 +237,8 @@ def build() -> None:
 
     draw_line_chart(c, 34, 194, 465, 191, monthly)
     draw_country_chart(c, 510, 194, PAGE_W - 544, 191, countries)
-    draw_product_table(c, 34, 55, PAGE_W - 68, 121, products)
-    text(c, 34, 37, f"Registered-customer repeat rate: {pct(float(repeats['repeat_customer_rate']))}  |  Query-defined gross/net revenue excludes non-product rows.", 7, MUTED)
+    draw_product_table(c, 34, 53, PAGE_W - 68, 126, products)
+    text(c, 34, 36, f"Registered-customer repeat rate: {pct(float(repeats['repeat_customer_rate']))}  |  Query-defined gross/net revenue excludes non-product rows.", 7, MUTED)
     c.showPage()
 
     page_base(c, 2, "Customer segments & retention")
